@@ -6,7 +6,8 @@ WORKDIR /var/www/html
 # Install dependencies only when needed
 FROM base AS deps
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --classmap-authoritative --optimize-autoloader
+RUN composer clear-cache
 
 # Rebuild the source code only when needed
 FROM base AS builder
