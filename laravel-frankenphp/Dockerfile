@@ -1,23 +1,24 @@
 # Base image
 FROM dunglas/frankenphp:alpine AS base
-RUN install-php-extensions Ctype cURL DOM Fileinfo Filter Hash Mbstring OpenSSL PCRE PDO Session Tokenizer XML
 WORKDIR /app
+ENV SERVER_NAME=:80 
+RUN install-php-extensions Ctype cURL DOM Fileinfo Filter Hash Mbstring OpenSSL PCNTL PCRE PDO Session Tokenizer XML
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 # Install dependencies only when needed
-FROM base AS deps
-COPY --from=composer/composer:latest-bin /composer /usr/bin/composer
+FROM composer:latest AS deps
+WORKDIR /app
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --classmap-authoritative --optimize-autoloader
-RUN composer clear-cache
+RUN composer install --no-scripts --no-dev --classmap-authoritative 
 
 # Rebuild the source code only when needed
-FROM base AS builder
-COPY --from=deps /app/vendor ./vendor
+FROM deps AS builder
 COPY . .
+RUN composer dump-autoload
 
 # Production image, copy all the files and run laravel
 FROM base AS runner
-COPY --from=builder /app ./
-# RUN echo 'APP_KEY=' > .env && php artisan key:generate
-ENV SERVER_NAME=:80
-ENV FRANKENPHP_CONFIG="worker ./public/index.php"
+COPY --from=builder /app .
+RUN echo 'APP_KEY=' > .env && php artisan key:generate
+
+ENTRYPOINT ["php", "artisan", "octane:frankenphp"]
