@@ -20,5 +20,6 @@ RUN composer dump-autoload
 FROM base AS runner
 COPY --from=builder /app .
 RUN echo 'APP_KEY=' > .env && php artisan key:generate
+RUN php artisan optimize
 
 ENTRYPOINT ["php", "artisan", "octane:frankenphp"]
