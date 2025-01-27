@@ -2,7 +2,7 @@
 FROM dunglas/frankenphp:alpine AS base
 WORKDIR /app
 ENV SERVER_NAME=:80 
-RUN install-php-extensions Ctype cURL DOM Fileinfo Filter Hash Mbstring OpenSSL PCNTL PCRE PDO Session Tokenizer XML
+RUN install-php-extensions Ctype cURL DOM Fileinfo Filter Hash Mbstring OPcache OpenSSL PCNTL PCRE PDO Session Tokenizer XML
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 # Install dependencies only when needed
