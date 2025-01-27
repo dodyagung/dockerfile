@@ -18,7 +18,7 @@ RUN composer dump-autoload
 
 # Production image, copy all the files and run laravel
 FROM base AS runner
-COPY --from=builder /app .
+COPY --chown=www-data:www-data --from=builder /app .
 RUN echo 'APP_KEY=' > .env && php artisan key:generate
 RUN php artisan optimize
 
