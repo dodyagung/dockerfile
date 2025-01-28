@@ -12,11 +12,11 @@ RUN composer install --no-scripts --no-dev --classmap-authoritative
 
 # Rebuild the source code only when needed
 FROM base AS builder
-COPY --chown=www-data:www-data --from=deps /var/www/html/vendor ./vendor
+COPY --from=deps /var/www/html/vendor ./vendor
 COPY --chown=www-data:www-data . .
 RUN composer dump-autoload
 
 # Production image, copy all the files and run
 FROM base AS runner
-COPY --from=builder /var/www/html/ ./
+COPY --chown=www-data:www-data --from=builder /var/www/html/ ./
 RUN echo 'APP_KEY=' > .env && php artisan key:generate
