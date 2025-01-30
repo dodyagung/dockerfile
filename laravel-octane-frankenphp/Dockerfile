@@ -6,7 +6,7 @@ RUN install-php-extensions Ctype cURL DOM Fileinfo Filter Hash Mbstring OPcache 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 # Install dependencies only when needed
-FROM composer:latest AS deps
+FROM composer:lts AS deps
 WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-scripts --no-dev --classmap-authoritative 
